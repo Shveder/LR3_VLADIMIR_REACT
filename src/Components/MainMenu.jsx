@@ -7,6 +7,7 @@ const MainMenu = () => {
   const [nameOfRoom, setNameOfRoom] = useState("");
   const [typeOfRoom, setTypeOfRoom] = useState("");
   const [roomsList, setRoomsList] = useState([]);
+  const [deleteName, setDeletename] = useState("");
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -50,6 +51,24 @@ const MainMenu = () => {
       })
   })
 
+  const handleDeleteRoom = (name)=>
+  {
+    axios.delete("https://localhost:7136/deleteRoom?name=" + name)
+    .then( response =>{
+      console.log(response.data);
+      axios.get("https://localhost:7136/getRooms")
+      .then(response => {
+        setRoomsList(response.data)
+      })
+      .catch(error => {
+        console.error(error.response.data);
+      })}
+    ).catch(error =>
+      {
+        console.error(error.response.data);
+      })
+  }
+
   return (
     <>
       <h1 className="heading">{formData.lib}</h1>
@@ -78,13 +97,13 @@ const MainMenu = () => {
       </div>
       <div className="deleteRoomBlock">
         Удалить помещение
-        <select className="inputNameOfRoom">
-          {roomsList.map((room) => (
-            <option key={room}>{room.name}</option>
+        <select className="inputNameOfRoom" value={deleteName} onChange={(event) => setDeletename(event.target.value)}>
+          {roomsList?.map((room) => (
+            <option key={room.name} onClick={() => setDeletename(room.name)}>{room.name}</option>
           ))}
         </select>
 
-        <button className="addButton">Удалить</button>
+        <button className="addButton" onClick = {()=>handleDeleteRoom(deleteName)}>Удалить</button>
       </div>
       <div className="editionNameBlock">
         Наименование издания: <input title="Введите наименование издания" /> Год:
