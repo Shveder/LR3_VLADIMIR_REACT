@@ -1,7 +1,48 @@
 .libNameBlock{
+    display: flex;;
+    justify-content: center;    
     margin-bottom: 20px;
+}
+.inputNameOfLib{
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 5px;
+}
+.addButton{
+    padding: 5px;
 }
 .roomNameBlock
 {
+    display: flex;;
+    justify-content: center;   
+    margin-bottom: 10px;
+}
+.inputNameOfRoom{
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 5px;
+}
+.typeRoomBlock
+{
+    display: flex;;
+    justify-content: center;   
     margin-bottom: 20px;
+}
+.deleteRoomBlock{
+    margin-bottom: 20px;
+    display: flex;;
+    justify-content: center;
+}
+.editionNameBlock{
+    margin-bottom: 20px;
+}
+.numberEditionBlock{
+    margin-bottom: 20px;
+}
+.editionTypeBlock{
+    margin-bottom: 20px;
+}
+.heading{
+    display: flex;;
+    justify-content: center;
 }
