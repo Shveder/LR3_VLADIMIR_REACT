@@ -8,6 +8,11 @@ const MainMenu = () => {
   const [typeOfRoom, setTypeOfRoom] = useState("");
   const [roomsList, setRoomsList] = useState([]);
   const [deleteName, setDeletename] = useState("");
+  const [nameItem, setNameItem] = useState("");
+  const [number, setNumber] = useState("");
+  const [author, setAuthor] = useState("");
+  const [year, setYear] = useState("");
+  const [info, setInfo] = useState("");
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -51,23 +56,75 @@ const MainMenu = () => {
       })
   })
 
-  const handleDeleteRoom = (name)=>
-  {
+  const handleDeleteRoom = (name) => {
     axios.delete("https://localhost:7136/deleteRoom?name=" + name)
-    .then( response =>{
-      console.log(response.data);
-      axios.get("https://localhost:7136/getRooms")
       .then(response => {
-        setRoomsList(response.data)
-      })
-      .catch(error => {
-        console.error(error.response.data);
-      })}
-    ).catch(error =>
-      {
+        console.log(response.data);
+        axios.get("https://localhost:7136/getRooms")
+          .then(response => {
+            setRoomsList(response.data)
+          })
+          .catch(error => {
+            console.error(error.response.data);
+          })
+      }
+      ).catch(error => {
         console.error(error.response.data);
       })
   }
+
+
+  const handleAddItem = (nameOfRoom, nameItem, number, year, type) => {
+    setInfo(type + ": " + nameItem + " добавлена в комнату " + nameOfRoom);
+    if (type === "Журнал") {
+      axios.post("https://localhost:7136/createNewMagazine?nameOfRoom=" + nameOfRoom + "&nameOfMagazine=" + nameItem + "&number=" + number + "&year=" + year)
+        .then(response => {
+          if (response.status === 200) {
+            console.log(response.data)
+          }
+        }).catch(error => {
+          console.error(error.response.data);
+        })
+    }
+    if (type === "Книга") {
+      axios.post("https://localhost:7136/createNewBook?nameOfRoom=" + nameOfRoom + "&nameOfBook=" + nameItem + "&author=" + author + "&year=" + year)
+        .then(response => {
+          if (response.status === 200) {
+            console.log(response.data)
+          }
+        }).catch(error => {
+          console.error(error.response.data);
+        })
+    }
+  };
+
+  const [type, setType] = useState(""); // Состояние для типа издания
+
+  const handleTypeChange = (event) => {
+    setType(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    // Вызов функции с передачей выбранного значения типа издания
+    myFunction(type);
+  };
+
+  const myFunction = (selectedType) => {
+    // Логика обработки выбранного значения типа издания
+    console.log("Выбранный тип издания:", selectedType);
+  };
+
+  const [selectedOption, setSelectedOption] = useState(""); // Состояние для выбранного значения
+
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const handleSubmit1 = () => {
+    // Обработка отправки формы
+    console.log("Выбранное значение:", selectedOption);
+  };
+
 
   return (
     <>
@@ -103,26 +160,61 @@ const MainMenu = () => {
           ))}
         </select>
 
-        <button className="addButton" onClick = {()=>handleDeleteRoom(deleteName)}>Удалить</button>
+        <button className="addButton" onClick={() => handleDeleteRoom(deleteName)}>Удалить</button>
       </div>
       <div className="editionNameBlock">
-        Наименование издания: <input title="Введите наименование издания" /> Год:
-        <input title="Введите год издания" />
+        Наименование издания: <input title="Введите наименование издания" value={nameItem} onChange={(event) => setNameItem(event.target.value)} />
+        Год: <input title="Введите год издания" value={year} onChange={(event) => setYear(event.target.value)} />
       </div>
       <div className="numberEditionBlock">
-        Номер:<input title="Введите номер издания" /> Автор:
-        <input title="Введите автора" />
+        Номер:<input title="Введите номер издания" value={number} onChange={(event) => setNumber(event.target.value)} />
+        Автор:<input title="Введите автора" value={author} onChange={(event) => setAuthor(event.target.value)} />
       </div>
       <div className="editionTypeBlock">
-        Тип издания:
-        <input type="radio" id="book" name="type" />Книга
-        <input type="radio" id="magazine" name="type" />Журнал
-        Поместить в:
-        <select>
-          <option>Абонимент</option>
-          <option>Читальный зал</option>
-        </select>
-        <button>Добавить</button>
+        <div className="editionTypeBlock">
+          Тип издания:
+          <input
+            type="radio"
+            id="book"
+            name="type"
+            value="book"
+            checked={type === "book"}
+            onChange={handleTypeChange}
+          />
+          Книга
+          <input
+            type="radio"
+            id="magazine"
+            name="type"
+            value="magazine"
+            checked={type === "magazine"}
+            onChange={handleTypeChange}
+          />
+          Журнал
+        </div>
+        <div className="editionTypeBlock">
+          Поместить в:
+          <select value={selectedOption} onChange={handleOptionChange}>
+          {roomsList?.map((room) => (
+            <option key={room.name} onClick={() => setDeletename(room.name)}>{room.name}</option>
+          ))}
+          </select>
+          <button onClick={() => handleAddItem(nameOfRoom, nameItem, number, year, type)}>Добавить</button>
+        </div>
+      </div>
+      <div className="editionTypeBlock">
+        <div>
+          Вся информация о библиотеке
+        </div>
+        <div>
+          Название: {formData.lib}
+        </div>
+        <div>
+          Количество помещений: {roomsList.length }
+        </div>
+        <div>
+          Информация о добавлении элемента: {info}
+        </div>
       </div>
     </>
   );
